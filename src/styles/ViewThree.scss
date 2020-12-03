@@ -1,9 +1,16 @@
 #view-three {
   #about-madi-text {
-    column-count: 4;
-    column-gap: 12px;
     p{
       text-indent: 2em;
+    }
+  }
+
+  #auc-wrapper {
+    display: flex;
+    gap: 24px;
+
+    #auc-box {
+      flex: 0 0 calc(50% - 12px);
     }
   }
 }

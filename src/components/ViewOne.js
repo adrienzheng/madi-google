@@ -11,9 +11,9 @@ import {
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
-import "../styles/ViewOne.scss"; 
+import "../styles/ViewOne.scss";
 
-import { threshholdText } from "../static";
+import { threshholdText, madiText } from "../static";
 
 import { data } from "../data";
 
@@ -40,11 +40,12 @@ export default function ViewOne() {
   React.useEffect(() => {
     let chartData = [];
     data.forEach((point, index) => {
-      if(1-point['class_prob'] >= .5) {
+      if (1 - point["class_prob"] >= 0.5) {
         chartData.push({
           id: index,
           x: point[`V${currentVariable}_value`],
-          y: 1-point['class_prob']})
+          y: 1 - point["class_prob"]
+        });
       }
     });
     setCurrentData(chartData);
@@ -52,19 +53,20 @@ export default function ViewOne() {
 
   React.useEffect(() => {
     let timeout = setTimeout(() => {
-      let chartData = []
+      let chartData = [];
       data.forEach((point, index) => {
-        if(1-point['class_prob'] >= threshold) {
+        if (1 - point["class_prob"] >= threshold) {
           chartData.push({
             id: index,
             x: point[`V${currentVariable}_value`],
-            y: 1-point['class_prob']})
+            y: 1 - point["class_prob"]
+          });
         }
-      })
-      setCurrentData(chartData)
+      });
+      setCurrentData(chartData);
     }, 200);
-    return () => clearTimeout(timeout)
-  }, [currentVariable, threshold])
+    return () => clearTimeout(timeout);
+  }, [currentVariable, threshold]);
 
   const changeFilter = event => {
     setVariable(event.target.value);
@@ -103,6 +105,11 @@ export default function ViewOne() {
       <Typography variant="h5" component="h2" align="center">
         Detecting Anomalies to Assist Prediction of Fraudulent Transactions
       </Typography>
+      <div className="section">
+        <Typography>
+          {madiText}
+        </Typography>
+      </div>
       <div id="controls" className="section">
         <div id="threshhold" className="box">
           <Typography variant="h6" component="h3">
@@ -125,9 +132,26 @@ export default function ViewOne() {
             <b>Threshold Summary</b>
           </Typography>
           <ul>
-            <li><Typography><strong>Total Points: </strong>{data.length}</Typography></li>
-            <li><Typography><strong>Anomalous Points Above threshhold: </strong>{currentData && currentData.length}</Typography></li>
-            <li><Typography color="error"><strong>Anomalous Score: </strong>{currentData && parseInt(currentData.length/data.length*1000)/10+"%"}</Typography></li>
+            <li>
+              <Typography>
+                <strong>Total Points: </strong>
+                {data.length}
+              </Typography>
+            </li>
+            <li>
+              <Typography>
+                <strong>Anomalous Points Above threshhold: </strong>
+                {currentData && currentData.length}
+              </Typography>
+            </li>
+            <li>
+              <Typography color="error">
+                <strong>Anomalous Score: </strong>
+                {currentData &&
+                  parseInt((currentData.length / data.length) * 1000) / 10 +
+                    "%"}
+              </Typography>
+            </li>
           </ul>
         </div>
       </div>

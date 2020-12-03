@@ -3,7 +3,6 @@ import './styles/App.scss';
 
 import {
   Button,
-  Paper,
   Tabs,
   Tab,
   Typography,
@@ -15,7 +14,7 @@ import ViewThree from './components/ViewThree'
 
 function App() {
 
-  const [currentView, setView] = React.useState(2)
+  const [currentView, setView] = React.useState(0)
 
   const changeView = (event, newView) => {
     setView(newView)
