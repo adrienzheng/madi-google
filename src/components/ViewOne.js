@@ -10,12 +10,15 @@ import {
 
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+import Boost from 'highcharts/modules/boost';
 
 import "../styles/ViewOne.scss";
 
 import { threshholdText, madiText } from "../static";
 
 import { data } from "../data";
+
+Boost(Highcharts);
 
 const marks = [
   { value: 0, label: "0" },
@@ -32,71 +35,78 @@ const marks = [
 ];
 
 export default function ViewOne() {
-  const [currentVariable, setVariable] = React.useState(1);
+  const [currentVariable, setVariable] = React.useState("TransactionAmt");
   const [currentData, setCurrentData] = React.useState(null);
   const [currentPoint, setPoint] = React.useState(null);
   const [threshold, setThreshold] = React.useState(0.5);
-
-  React.useEffect(() => {
-    let chartData = [];
-    data.forEach((point, index) => {
-      if (1 - point["class_prob"] >= 0.5) {
-        chartData.push({
-          id: index,
-          x: point[`V${currentVariable}_value`],
-          y: 1 - point["class_prob"]
-        });
-      }
-    });
-    setCurrentData(chartData);
-  }, []);
+  const [categories, setCategories] = React.useState([]);
 
   React.useEffect(() => {
     let timeout = setTimeout(() => {
-      let chartData = [];
+      let chartData = []
+      let categories = []
+      let cat_map = {}
       data.forEach((point, index) => {
-        if (1 - point["class_prob"] >= threshold) {
-          chartData.push({
-            id: index,
-            x: point[`V${currentVariable}_value`],
-            y: 1 - point["class_prob"]
-          });
+        if (1 - point["class_prob_observed"] >= threshold) {
+          if(["P_emaildomain", "R_emaildomain", "card4", "card6", "DeviceType", "addr1"].includes(currentVariable)) {          
+            let x
+            if(cat_map[point[`${currentVariable}_observed`]] !== undefined) {
+              x = cat_map[point[`${currentVariable}_observed`]]              
+            } else {
+              x = categories.length
+              categories.push(point[`${currentVariable}_observed`])
+              cat_map[point[`${currentVariable}_observed`]] = x
+            }
+            chartData.push({
+              id: index,
+              x: x,
+              y: 1 - point["class_prob_observed"]
+            })
+          } else {
+            chartData.push({
+              id: index,
+              x: point[`${currentVariable}_observed`],
+              y: 1 - point["class_prob_observed"]
+            })
+          }
         }
-      });
-      setCurrentData(chartData);
-    }, 200);
-    return () => clearTimeout(timeout);
-  }, [currentVariable, threshold]);
+      })
+
+      setCurrentData(chartData)
+      setCategories(categories)
+    }, 500);
+    return () => clearTimeout(timeout)
+  }, [currentVariable, threshold])
 
   const changeFilter = event => {
-    setVariable(event.target.value);
+    setVariable(event.target.value)
   };
 
   const changeThreshold = (event, newValue) => {
-    setThreshold(newValue);
+    setThreshold(newValue)
   };
 
   const changePoint = event => {
-    setPoint(event.point.id);
+    setPoint(event.point.id)
   };
 
   const getPointDetails = () => {
     if (currentPoint) {
-      let p = data[currentPoint];
+      let p = data[currentPoint]
       let bd = {};
       let others = 100;
       Object.keys(p).forEach(key => {
         if (key.indexOf("attr") > -1) {
-          if (p[key] > 0.05) {
+          if (p[key] > 0.005) {
             let percentage = parseInt(p[key] * 1000) / 10;
-            bd[key.slice(0, key.indexOf("_"))] = `${percentage}%`;
-            others -= percentage;
+            bd[key.slice(0, key.lastIndexOf("_"))] = `${percentage}%`
+            others -= percentage
           }
         }
       });
-      bd["Others"] = `${parseInt(others * 10) / 10}%`;
-      console.log(bd);
-      return bd;
+      bd["Others"] = `${parseInt(others * 10) / 10}%`
+      console.log(bd)
+      return bd
     }
   };
 
@@ -134,22 +144,28 @@ export default function ViewOne() {
           <ul>
             <li>
               <Typography>
+                <strong>False Positive Rate: </strong>
+                {"2:1"}
+              </Typography>
+            </li>
+            <li>
+              <Typography>
                 <strong>Total Points: </strong>
                 {data.length}
               </Typography>
             </li>
             <li>
               <Typography>
-                <strong>Anomalous Points Above threshhold: </strong>
+                <strong>Anomalous Points Above Threshold: </strong>
                 {currentData && currentData.length}
               </Typography>
             </li>
             <li>
               <Typography color="error">
-                <strong>Anomalous Score: </strong>
+                <strong>Percentage of Anomalous Points in Dataset: </strong>
                 {currentData &&
                   parseInt((currentData.length / data.length) * 1000) / 10 +
-                    "%"}
+                    "% Anomalous"}
               </Typography>
             </li>
           </ul>
@@ -167,10 +183,15 @@ export default function ViewOne() {
               value={currentVariable}
               label="Filter By"
             >
-              <MenuItem value={1}>V1</MenuItem>
-              <MenuItem value={2}>V2</MenuItem>
-              <MenuItem value={3}>V3</MenuItem>
-              <MenuItem value={4}>V4</MenuItem>
+              <MenuItem value={"TransactionAmt"}>Transaction Amount ($)</MenuItem>
+              <MenuItem value={"TransactionDT"}>Transaction Date (Relative)</MenuItem>
+              <MenuItem value={"P_emaildomain"}>Email Domain (Purchaser)</MenuItem>
+              <MenuItem value={"R_emaildomain"}>Email Domain (Recipient)</MenuItem>
+              <MenuItem value={"card4"}>Card Company</MenuItem>
+              <MenuItem value={"card6"}>Card Type</MenuItem>
+              <MenuItem value={"dist1"}>Distance</MenuItem>
+              <MenuItem value={"addr1"}>Address</MenuItem>
+              <MenuItem value={"DeviceType"}>Device Type</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -178,7 +199,7 @@ export default function ViewOne() {
           highcharts={Highcharts}
           options={{
             title: {
-              text: `Anomalous Likelihood by V${currentVariable}`
+              text: `Anomalous Likelihood by ${currentVariable}`
             },
             chart: {
               type: "scatter",
@@ -187,15 +208,16 @@ export default function ViewOne() {
             xAxis: {
               title: {
                 enabled: true,
-                text: `V${currentVariable}`
+                text: `${currentVariable}`
               },
+              categories: categories.length>0 ? categories : undefined,
               startOnTick: true,
               endOnTick: true,
               showLastLabel: true
             },
             yAxis: {
               title: {
-                text: "Likely Hood Percentage"
+                text: "Likelihood Percentage"
               }
             },
             plotOptions: {
@@ -218,6 +240,8 @@ export default function ViewOne() {
                 }
               },
               series: {
+                boostThreshold: 1000,
+                turboThreshold: 5000,
                 cursor: "pointer",
                 point: {
                   events: {
@@ -247,43 +271,68 @@ export default function ViewOne() {
           Clicking on an individual point in the Anomalous Likelihood cluster
           will show the breakdown of attributes that contribute to this point.
           Percentages are allotted to these attributes to help you understand
-          what attributes contributed most to the resulting anomalous score.
-          <br />
-          <br />
-          Try clicking on an attribute in the Variable Breakdown to reveal more
-          insights!
+          what attributes contributed most to the resulting anomaly score.
         </Typography>
-        {
-          <div id="breakdown-cont" className={currentPoint ? "visible" : ""}>
-            <Typography component="h4">
-              <b>Point Breakdown</b>
-            </Typography>
-            <div id="breakdown">
-              {currentPoint &&
-                Object.entries(getPointDetails()).map(([key, value], index) => (
-                  <div
-                    className="breakdown-variable"
-                    key={key === "Others" ? "Others" : index}
-                    style={{
-                      flexBasis: value,
-                      backgroundColor:
-                        key === "Others"
-                          ? "lightgray"
-                          : [
-                              "#9DD1C7",
-                              "#BDBAD7",
-                              "#EB8777",
-                              "#89B1D0",
-                              "#BCDC78"
-                            ][index % 5]
-                    }}
-                  >
-                    {key}
-                  </div>
-                ))}
-            </div>
+
+        <div id="breakdown-cont" className={currentPoint ? "visible" : ""}>
+          <Typography component="h4">
+            <b>Point Breakdown</b>
+          </Typography>
+          <div id="breakdown">
+            {currentPoint &&
+              Object.entries(getPointDetails()).map(([key, value], index) => (
+                <div
+                  className="breakdown-variable"
+                  key={key === "Others" ? "Others" : index}
+                  style={{
+                    flexBasis: value,
+                    backgroundColor:
+                      key === "Others"
+                        ? "lightgray"
+                        : [
+                            "#9DD1C7",
+                            "#BDBAD7",
+                            "#EB8777",
+                            "#89B1D0",
+                            "#BCDC78"
+                          ][index % 5]
+                  }}
+                >
+                  <div>{key}</div> 
+                  <div>{value}</div>
+                </div>
+              ))}
           </div>
-        }
+        </div>
+        <div id="detail-cont" className={currentPoint ? "visible" : ""}>
+          <div id="risk-level">
+            <Typography component="h4"><b>Rist Level</b></Typography>
+            <table>
+              <tr><td>Threshold False Positive Rate:</td><td>2:1</td></tr>
+              <tr><td>Anomalous Likelihood:</td><td>{currentPoint && parseInt(data[currentPoint]["class_prob_observed"]*1000)/10+"%"}</td></tr>
+              <tr><td>Recommended action:</td><td>Decline the transaction</td></tr>
+            </table>
+          </div>
+          <div id="transaction-info">
+            <Typography component="h4"><b>Transaction Information</b></Typography>
+            <table>
+              <tr><td>Payment Type:</td><td>{currentPoint && data[currentPoint]["card6_observed"]}</td></tr>
+              <tr><td>Card Company:</td><td>{currentPoint && data[currentPoint]["card4_observed"]}</td></tr>
+              <tr><td>Relative Date of Transaction:</td><td>{currentPoint && data[currentPoint]["TransactionDT_observed"]}</td></tr>
+              <tr><td>Transaction Amount:</td><td>${currentPoint && data[currentPoint]["TransactionAmt_observed"]}</td></tr>
+              <tr><td>Billing Address:</td><td>{currentPoint && data[currentPoint]["addr1_observed"]}</td></tr>
+            </table>
+          </div>
+          <div id="device-info">
+            <Typography component="h4"><b>Device and Contact Information</b></Typography>
+            <table>
+              <tr><td>Device Type:</td><td>{currentPoint && data[currentPoint]["DeviceType_observed"]}</td></tr>
+              <tr><td>Purchaser's Email Domain:</td><td>{currentPoint && data[currentPoint]["P_emaildomain_observed"]}</td></tr>
+              <tr><td>Recipient's Email Domain:</td><td>{currentPoint && data[currentPoint]["R_emaildomain_observed"]}</td></tr>
+            </table>
+          </div>
+        </div>
+
       </div>
     </div>
   );

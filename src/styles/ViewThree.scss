@@ -5,12 +5,29 @@
     }
   }
 
-  #auc-wrapper {
+  #auc-explanation {
     display: flex;
-    gap: 24px;
+    gap: 32px;
 
-    #auc-box {
-      flex: 0 0 calc(50% - 12px);
+    .box {
+      flex: 1 0;
+    }
+  }
+
+  #auc-cont {
+    display: flex;
+    gap: 48px;
+
+    .auc-wrapper {
+      flex: 1 0 540px;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      p{
+        margin-bottom: 16px;
+      }
     }
   }
 }

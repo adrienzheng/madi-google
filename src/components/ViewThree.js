@@ -1,10 +1,5 @@
 import React from 'react'
 import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Slider,
   Typography
 } from "@material-ui/core";
 
@@ -15,18 +10,25 @@ import highcharts3d from 'highcharts/highcharts-3d';
 import "../styles/ViewThree.scss";
 
 import {
+  nsnn,
+  nsrf,
+  iso,
+  ocsvm
+} from '../auc'
+
+import {
   aboutMadiText,
-  aucText
+  aucGraph
 } from "../static";
 
 highcharts3d(Highcharts);
 
 export default function ViewThree() {
 
-  const options = {
+  const madiOptions = {
     chart: {
       type: 'areaspline',
-      height: 9/16 * 100 + "%",
+      height: "100%",
     },
     title: {
       text: ''
@@ -47,22 +49,52 @@ export default function ViewThree() {
     },
     series: [
       {
-        name: "MADI",
-        data: [
-          {x: 0, y: 0},
-          {x: 0.1, y: 0.5},
-          {x: 0.2, y: 0.7},
-          {x: 0.3, y: 0.8},
-          {x: 0.4, y: 0.85},
-          {x: 0.5, y: 0.88},
-          {x: 0.6, y: 0.9},
-          {x: 0.7, y: 0.91},
-          {x: 0.8, y: 0.915},
-          {x: 0.9, y: 0.92},
-          {x: 1, y: 1}
-        ]
+        name: "NS-NN",
+        data: nsnn
+      },{
+        name: "NS-RF",
+        data: nsrf
       }
-    ]
+    ],
+    credits: {
+      text: "Powered by MADI by Google"
+    }
+  }
+
+  const othersOptions = {
+    chart: {
+      type: 'areaspline',
+      height: "100%",
+    },
+    title: {
+      text: ''
+    },
+    yAxis: {
+      min: 0,
+      max: 1,
+      title: {
+        text: "True Positve Rate"
+      }
+    },
+    xAxis: {
+      min: 0,
+      max: 1,
+      title: {
+        text: "False Positive Rate"
+      }
+    },
+    series: [
+      {
+        name: "ISO",
+        data: iso
+      },{
+        name: "OC-SVM",
+        data: ocsvm
+      }
+    ],
+    credits: {
+      text: "Powered by MADI by Google"
+    }
   }
 
   return (
@@ -78,21 +110,50 @@ export default function ViewThree() {
           <Typography>{paragraph}</Typography>  
         )}
       </div>
-      <div className="section box" id="auc-cont">
+      <div className="section" id="auc-explanation">
+        <div className="box">
+          <Typography variant="h6" component="h3">
+            <b>What is an AUC-ROC Curve?</b>
+          </Typography>
+          <Typography>The ROC curve shows the ratio between True Positive and False Positive rates at different classification thresholds. These thresholds are what is used in the AD Breakdown to adjust for the level of risk a user is willing to experience when looking at potentially anomalous transactions. AUC stands for Area Under the Curve, and represents the overall accuracy of an anomaly detection method at all thresholds.</Typography>
+          {aucGraph}
+        </div>
+        <div className="box">
+          <Typography variant="h6" component="h3">
+            <b>How Can MADI be applied to the Transaction Fraud Space?</b>
+          </Typography>
+          <Typography>
+            Machine learning has become a hot topic in the fraud detection industry as companies are switching from rule-based approaches to ML-based solutions. One major benefit that comes with using ML approaches is the ability for real-time processing of account behavior to determine whether a transaction might be fraudulent.
+            <br/><br/>
+            MADI’s advantage as a novel anomaly detection method is its interpretability.
+          </Typography>
+        </div>
+      </div>
+      <div className="section box">
         <Typography variant="h6" component="h3">
-          <b>AUC - ROC Curve of MADI on IEEE-CIS Fraud Detection Dataset</b>
+          <b>AUC - ROC Curve of MADI vs. Other Anomaly Detection Methods on IEEE-CIS Fraud Detection Dataset</b>
         </Typography>
-        <div id ="auc-wrapper">
-          <div id="auc-box">
+        <div id ="auc-cont">
+          <div className="auc-wrapper">
+            <div className="auc-text">
+              <Typography component="h3" variant="h6">MADI</Typography>
+              <Typography>
+                MADI uses two main approches: NS-NN (negative sampling neural networks) and NS-RF (negative sampling random forest).
+              </Typography>
+            </div>
             <HighchartsReact 
               highcharts = {Highcharts}
-              options={options}
+              options={madiOptions}
             />
           </div>
-          <div id="auc-description">
-            {aucText.map(paragraph => 
-              <Typography>{paragraph}</Typography>
-            )}
+          <div className="auc-wrapper">
+            <div className="auc-text">
+              <Typography component="h3" variant="h6">Others</Typography>
+            </div>
+            <HighchartsReact 
+              highcharts = {Highcharts}
+              options={othersOptions}
+            />    
           </div>
         </div>
       </div>

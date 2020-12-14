@@ -2,14 +2,13 @@
 
   #controls {
     display: flex;
+    gap: 32px;
 
     .box {
       flex: 1 0 40%;
     }
 
     #threshhold {
-      margin-right: 32px;
-
       #threshold-slider {
         margin-top: 24px;
       }
@@ -47,6 +46,27 @@
           padding: 40px 0;
           text-align: center;
           transition: all 0.5s;
+        }
+      }
+    }
+
+    #detail-cont {
+      display: flex;
+      margin-top: 32px;
+      opacity: 0;
+      transition: all 0.5s;
+
+      &.visible {
+        opacity: 1;
+      }
+
+      &>div {
+        flex: 1 0 calc(100% / 3);
+
+        table {
+          td {
+            padding-right: 18px;
+          }
         }
       }
     }
