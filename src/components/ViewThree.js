@@ -27,7 +27,7 @@ export default function ViewThree() {
 
   const madiOptions = {
     chart: {
-      type: 'areaspline',
+      type: 'area',
       height: "100%",
     },
     title: {
@@ -63,7 +63,7 @@ export default function ViewThree() {
 
   const othersOptions = {
     chart: {
-      type: 'areaspline',
+      type: 'area',
       height: "100%",
     },
     title: {

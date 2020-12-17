@@ -83,8 +83,8 @@ export default function ViewTwo() {
                   "visa",
                   "mastercard",
                   "discover",
-                  "nan",
-                  "american express"
+                  "american express",
+                  "N/A"
                 ],
                 crosshair: true
               },
@@ -112,7 +112,7 @@ export default function ViewTwo() {
               series: [
                 {
                   showInLegend: false,
-                  data: [475, 195, 18, 689, 75]
+                  data: [475, 195, 18, 75, 689]
                 }
               ],
               credits: {

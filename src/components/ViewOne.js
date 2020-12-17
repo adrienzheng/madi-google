@@ -1,4 +1,5 @@
 import React from "react";
+import { SwitchTransition, CSSTransition } from "react-transition-group"
 import {
   FormControl,
   InputLabel,
@@ -7,6 +8,8 @@ import {
   Slider,
   Typography
 } from "@material-ui/core";
+
+import { Feedback, Info } from '@material-ui/icons';
 
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
@@ -36,8 +39,9 @@ const marks = [
 
 export default function ViewOne() {
   const [currentVariable, setVariable] = React.useState("TransactionAmt");
-  const [currentData, setCurrentData] = React.useState(null);
+  const [currentData, setData] = React.useState(null);
   const [currentPoint, setPoint] = React.useState(null);
+  const [currentPointVariable, setPointVariable] = React.useState(null);
   const [threshold, setThreshold] = React.useState(0.5);
   const [categories, setCategories] = React.useState([]);
 
@@ -60,20 +64,19 @@ export default function ViewOne() {
             chartData.push({
               id: index,
               x: x,
-              y: 1 - point["class_prob_observed"]
+              y: parseInt((1 - point["class_prob_observed"])*1000)/1000
             })
           } else {
             chartData.push({
               id: index,
               x: point[`${currentVariable}_observed`],
-              y: 1 - point["class_prob_observed"]
+              y: parseInt((1 - point["class_prob_observed"])*1000)/1000
             })
           }
         }
       })
-
-      setCurrentData(chartData)
       setCategories(categories)
+      setData(chartData)
     }, 500);
     return () => clearTimeout(timeout)
   }, [currentVariable, threshold])
@@ -88,6 +91,7 @@ export default function ViewOne() {
 
   const changePoint = event => {
     setPoint(event.point.id)
+    console.log(data[event.point.id])
   };
 
   const getPointDetails = () => {
@@ -103,12 +107,24 @@ export default function ViewOne() {
             others -= percentage
           }
         }
-      });
+      })
       bd["Others"] = `${parseInt(others * 10) / 10}%`
-      console.log(bd)
       return bd
     }
   };
+
+  const vname = {
+    "TransactionAmt": "Transaction Amount",
+    "TransactionDT": "Transaction Time Delta",
+    "P_emaildomain": "Email Domain (Purchaser)",
+    "R_emaildomain": "Email Domain (Receiver)",
+    "card4": "Card Company",
+    "card6": "Card Type",
+    "dist1": "Distance",
+    "addr1": "Billing Region",
+    "DeviceType": "Device Type",
+    "Others": "Others"
+  }
 
   return (
     <div id="view-one">
@@ -133,7 +149,7 @@ export default function ViewOne() {
             valueLabelDisplay="auto"
             min={0}
             max={1}
-            step={0.01}
+            step={0.1}
             marks={marks}
           />
         </div>
@@ -183,14 +199,14 @@ export default function ViewOne() {
               value={currentVariable}
               label="Filter By"
             >
-              <MenuItem value={"TransactionAmt"}>Transaction Amount ($)</MenuItem>
-              <MenuItem value={"TransactionDT"}>Transaction Date (Relative)</MenuItem>
+              <MenuItem value={"TransactionAmt"}>Transaction Amount($)</MenuItem>
+              <MenuItem value={"TransactionDT"}>Transaction Time Delta(Second)</MenuItem>
               <MenuItem value={"P_emaildomain"}>Email Domain (Purchaser)</MenuItem>
               <MenuItem value={"R_emaildomain"}>Email Domain (Recipient)</MenuItem>
               <MenuItem value={"card4"}>Card Company</MenuItem>
               <MenuItem value={"card6"}>Card Type</MenuItem>
-              <MenuItem value={"dist1"}>Distance</MenuItem>
-              <MenuItem value={"addr1"}>Address</MenuItem>
+              <MenuItem value={"dist1"}>Distance(Miles)</MenuItem>
+              <MenuItem value={"addr1"}>Billing Region</MenuItem>
               <MenuItem value={"DeviceType"}>Device Type</MenuItem>
             </Select>
           </FormControl>
@@ -199,18 +215,21 @@ export default function ViewOne() {
           highcharts={Highcharts}
           options={{
             title: {
-              text: `Anomalous Likelihood by ${currentVariable}`
+              text: undefined
             },
             chart: {
               type: "scatter",
               zoomType: "xy"
             },
+            legend: {
+              enabled: false
+            },
             xAxis: {
               title: {
                 enabled: true,
-                text: `${currentVariable}`
+                text: `${vname[currentVariable]}`
               },
-              categories: categories.length>0 ? categories : undefined,
+              categories: categories.length>0 ? categories : false,
               startOnTick: true,
               endOnTick: true,
               showLastLabel: true
@@ -222,22 +241,15 @@ export default function ViewOne() {
             },
             plotOptions: {
               scatter: {
+                allowPointSelect: true,
                 marker: {
                   radius: 5,
                   states: {
-                    hover: {
-                      enabled: true,
-                      lineColor: "rgb(100,100,100)"
+                    select: {
+
                     }
                   }
                 },
-                states: {
-                  hover: {
-                    marker: {
-                      enabled: false
-                    }
-                  }
-                }
               },
               series: {
                 boostThreshold: 1000,
@@ -262,77 +274,85 @@ export default function ViewOne() {
             }
           }}
         />
+        <div className="note"><Info color="primary" fontSize="small"/>Brush over the scatterplot to view only points in that selection.</div>
+        <div className="note"><Info color="primary" fontSize="small"/>Clicking on an individual point in the Anomalous Likelihood cluster will show the breakdown of attributes that contribute to this point.</div>
       </div>
       <div id="point-details" className="section box">
         <Typography variant="h6" component="h3">
           <b>Point Details</b>
         </Typography>
-        <Typography>
-          Clicking on an individual point in the Anomalous Likelihood cluster
-          will show the breakdown of attributes that contribute to this point.
-          Percentages are allotted to these attributes to help you understand
-          what attributes contributed most to the resulting anomaly score.
-        </Typography>
-
-        <div id="breakdown-cont" className={currentPoint ? "visible" : ""}>
-          <Typography component="h4">
-            <b>Point Breakdown</b>
-          </Typography>
-          <div id="breakdown">
-            {currentPoint &&
-              Object.entries(getPointDetails()).map(([key, value], index) => (
-                <div
-                  className="breakdown-variable"
-                  key={key === "Others" ? "Others" : index}
-                  style={{
-                    flexBasis: value,
-                    backgroundColor:
-                      key === "Others"
-                        ? "lightgray"
-                        : [
-                            "#9DD1C7",
-                            "#BDBAD7",
-                            "#EB8777",
-                            "#89B1D0",
-                            "#BCDC78"
-                          ][index % 5]
-                  }}
-                >
-                  <div>{key}</div> 
-                  <div>{value}</div>
-                </div>
-              ))}
-          </div>
-        </div>
-        <div id="detail-cont" className={currentPoint ? "visible" : ""}>
-          <div id="risk-level">
-            <Typography component="h4"><b>Rist Level</b></Typography>
-            <table>
-              <tr><td>Threshold False Positive Rate:</td><td>2:1</td></tr>
-              <tr><td>Anomalous Likelihood:</td><td>{currentPoint && parseInt(data[currentPoint]["class_prob_observed"]*1000)/10+"%"}</td></tr>
-              <tr><td>Recommended action:</td><td>Decline the transaction</td></tr>
-            </table>
-          </div>
-          <div id="transaction-info">
-            <Typography component="h4"><b>Transaction Information</b></Typography>
-            <table>
-              <tr><td>Payment Type:</td><td>{currentPoint && data[currentPoint]["card6_observed"]}</td></tr>
-              <tr><td>Card Company:</td><td>{currentPoint && data[currentPoint]["card4_observed"]}</td></tr>
-              <tr><td>Relative Date of Transaction:</td><td>{currentPoint && data[currentPoint]["TransactionDT_observed"]}</td></tr>
-              <tr><td>Transaction Amount:</td><td>${currentPoint && data[currentPoint]["TransactionAmt_observed"]}</td></tr>
-              <tr><td>Billing Address:</td><td>{currentPoint && data[currentPoint]["addr1_observed"]}</td></tr>
-            </table>
-          </div>
-          <div id="device-info">
-            <Typography component="h4"><b>Device and Contact Information</b></Typography>
-            <table>
-              <tr><td>Device Type:</td><td>{currentPoint && data[currentPoint]["DeviceType_observed"]}</td></tr>
-              <tr><td>Purchaser's Email Domain:</td><td>{currentPoint && data[currentPoint]["P_emaildomain_observed"]}</td></tr>
-              <tr><td>Recipient's Email Domain:</td><td>{currentPoint && data[currentPoint]["R_emaildomain_observed"]}</td></tr>
-            </table>
-          </div>
-        </div>
-
+        <SwitchTransition><CSSTransition
+          key={currentPoint}
+          classNames="fade"
+          addEndListener={(node, done) => {
+            node.addEventListener("transitionend", done, false);
+          }}
+        >
+          {!currentPoint ? <div id="no-point-message" className="fade-transition-cont">
+            <Feedback color="disabled" style = {{fontSize: 64}}/>
+            <div>Nothing to see here ... <br /> Please click on an individual point in the graph above <br/> to see the breakdown of attributes that contribute to this point.</div>
+          </div> : <div className="fade-transition-cont">
+            <div id="breakdown-cont">
+              <Typography component="h4">
+                <b>Point Breakdown for Point #{("0000"+currentPoint).slice(-5)}</b>
+              </Typography>
+              <div id="breakdown">
+                {Object.entries(getPointDetails()).map(([key, value], index) => (
+                  <div
+                    className="breakdown-variable"
+                    key={key === "Others" ? "Others" : index}
+                    style={{
+                      flexBasis: value,
+                      backgroundColor:
+                        key === "Others"
+                          ? "lightgray"
+                          : [
+                              "#9DD1C7",
+                              "#BDBAD7",
+                              "#EB8777",
+                              "#89B1D0",
+                              "#BCDC78"
+                            ][index % 5]
+                    }}
+                  >
+                    <div><b>{vname[key]}</b></div> 
+                    <div>{value}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="note"><Info color="primary" fontSize="small"/>Percentages are allotted to these attributes to help you understand
+              what attributes contributed most to the resulting anomaly score. Variables with a percentage attribution lower than 0.5% are aggregated into the “Others” category.</div>
+            </div>
+            <div id="detail-cont">
+              <div id="risk-level">
+                <Typography component="h4"><b>Risk Level</b></Typography>
+                <table>
+                  <tr><td>Threshold False Positive Rate:</td><td>2:1</td></tr>
+                  <tr><td>Anomalous Likelihood:</td><td>{parseInt(data[currentPoint]["class_prob_observed"]*1000)/10+"%"}</td></tr>
+                </table>
+              </div>
+              <div id="transaction-info">
+                <Typography component="h4"><b>Transaction Information</b></Typography>
+                <table>
+                  <tr><td>Payment Type:</td><td>{data[currentPoint]["card6_observed"]}</td></tr>
+                  <tr><td>Card Company:</td><td>{data[currentPoint]["card4_observed"]}</td></tr>
+                  <tr><td>Transaction Time Delta:</td><td>{data[currentPoint]["TransactionDT_observed"]} seconds</td></tr>
+                  <tr><td>Transaction Amount:</td><td>${data[currentPoint]["TransactionAmt_observed"]}</td></tr>
+                  <tr><td>Billing Region:</td><td>{data[currentPoint]["addr1_observed"] > 0 ? data[currentPoint]["addr1_observed"] : "N/A"}</td></tr>
+                  <tr><td>Distance:</td><td>{data[currentPoint]["dist1_observed"] > 0 ? data[currentPoint]["dist1_observed"] + " miles" : "N/A"} </td></tr>
+                </table>
+              </div>
+              <div id="device-info">
+                <Typography component="h4"><b>Device and Contact Information</b></Typography>
+                <table>
+                  <tr><td>Device Type:</td><td>{data[currentPoint]["DeviceType_observed"]}</td></tr>
+                  <tr><td>Purchaser's Email Domain:</td><td>{data[currentPoint]["P_emaildomain_observed"]}</td></tr>
+                  <tr><td>Recipient's Email Domain:</td><td>{data[currentPoint]["R_emaildomain_observed"]}</td></tr>
+                </table>
+              </div>
+            </div>
+          </div>}
+        </CSSTransition></SwitchTransition>
       </div>
     </div>
   );

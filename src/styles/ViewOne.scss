@@ -27,23 +27,33 @@
     }
   }
 
+  #scatter-cont {
+    #scatter-filters {
+      margin-bottom: 18px;
+    }
+  }
+
   #point-details {
+    #no-point-message {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      padding: 36px 25%;
+      color: gray;
+    }
+    
     #breakdown-cont {
       margin-top: 32px;
-      opacity: 0;
       overflow: hidden;
       transition: all 1s;
-      
-      &.visible {
-        opacity: 1;
-      }
 
       #breakdown {
         display: flex;
         margin-top: 24px;
 
         .breakdown-variable {
-          padding: 40px 0;
+          padding: 40px 12px;
           text-align: center;
           transition: all 0.5s;
         }
@@ -53,12 +63,7 @@
     #detail-cont {
       display: flex;
       margin-top: 32px;
-      opacity: 0;
       transition: all 0.5s;
-
-      &.visible {
-        opacity: 1;
-      }
 
       &>div {
         flex: 1 0 calc(100% / 3);
@@ -72,3 +77,4 @@
     }
   }
 }
+
