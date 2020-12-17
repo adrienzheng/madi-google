@@ -91,8 +91,13 @@ export default function ViewOne() {
 
   const changePoint = event => {
     setPoint(event.point.id)
-    console.log(data[event.point.id])
+    setPointVariable(null)
   };
+
+  const changePointVariable = variable => {
+    if (variable !== "Others") setPointVariable(variable)
+    if(currentPointVariable === variable) setPointVariable(null)
+  }
 
   const getPointDetails = () => {
     if (currentPoint) {
@@ -119,7 +124,7 @@ export default function ViewOne() {
     "P_emaildomain": "Email Domain (Purchaser)",
     "R_emaildomain": "Email Domain (Receiver)",
     "card4": "Card Company",
-    "card6": "Card Type",
+    "card6": "Payment Type",
     "dist1": "Distance",
     "addr1": "Billing Region",
     "DeviceType": "Device Type",
@@ -204,7 +209,7 @@ export default function ViewOne() {
               <MenuItem value={"P_emaildomain"}>Email Domain (Purchaser)</MenuItem>
               <MenuItem value={"R_emaildomain"}>Email Domain (Recipient)</MenuItem>
               <MenuItem value={"card4"}>Card Company</MenuItem>
-              <MenuItem value={"card6"}>Card Type</MenuItem>
+              <MenuItem value={"card6"}>Payment Type</MenuItem>
               <MenuItem value={"dist1"}>Distance(Miles)</MenuItem>
               <MenuItem value={"addr1"}>Billing Region</MenuItem>
               <MenuItem value={"DeviceType"}>Device Type</MenuItem>
@@ -301,18 +306,21 @@ export default function ViewOne() {
                   <div
                     className="breakdown-variable"
                     key={key === "Others" ? "Others" : index}
+                    onClick = {() => changePointVariable(key)}
                     style={{
                       flexBasis: value,
-                      backgroundColor:
-                        key === "Others"
-                          ? "lightgray"
-                          : [
-                              "#9DD1C7",
-                              "#BDBAD7",
-                              "#EB8777",
-                              "#89B1D0",
-                              "#BCDC78"
-                            ][index % 5]
+                      cursor: key !== "Others" && "pointer",
+                      backgroundColor: currentPointVariable ? (
+                        key === currentPointVariable ? "#9DD1C7" : "lightgray"
+                      ):(key === "Others" ? (
+                        "lightgray"
+                      ):([
+                          "#9DD1C7",
+                          "#BDBAD7",
+                          "#EB8777",
+                          "#89B1D0",
+                          "#BCDC78"
+                      ][index % 5]))
                     }}
                   >
                     <div><b>{vname[key]}</b></div> 
@@ -320,35 +328,35 @@ export default function ViewOne() {
                   </div>
                 ))}
               </div>
-              <div className="note"><Info color="primary" fontSize="small"/>Percentages are allotted to these attributes to help you understand
-              what attributes contributed most to the resulting anomaly score. Variables with a percentage attribution lower than 0.5% are aggregated into the “Others” category.</div>
+              <div className="note"><Info color="primary" fontSize="small"/>Percentages are allotted to these attributes to help you understand what attributes contributed most to the resulting anomaly score. Variables with a percentage attribution lower than 0.5% and variables that are not included in the filters are aggregated into the “Others” category.</div>
+              <div className="note"><Info color="primary" fontSize="small"/>Clicking on a variable will highlight the information relevant to it. To deselect, simply click on the variable again.</div>
             </div>
             <div id="detail-cont">
               <div id="risk-level">
                 <Typography component="h4"><b>Risk Level</b></Typography>
-                <table>
+                <table><tbody>
                   <tr><td>Threshold False Positive Rate:</td><td>2:1</td></tr>
                   <tr><td>Anomalous Likelihood:</td><td>{parseInt(data[currentPoint]["class_prob_observed"]*1000)/10+"%"}</td></tr>
-                </table>
+                </tbody></table>
               </div>
               <div id="transaction-info">
                 <Typography component="h4"><b>Transaction Information</b></Typography>
-                <table>
-                  <tr><td>Payment Type:</td><td>{data[currentPoint]["card6_observed"]}</td></tr>
-                  <tr><td>Card Company:</td><td>{data[currentPoint]["card4_observed"]}</td></tr>
-                  <tr><td>Transaction Time Delta:</td><td>{data[currentPoint]["TransactionDT_observed"]} seconds</td></tr>
-                  <tr><td>Transaction Amount:</td><td>${data[currentPoint]["TransactionAmt_observed"]}</td></tr>
-                  <tr><td>Billing Region:</td><td>{data[currentPoint]["addr1_observed"] > 0 ? data[currentPoint]["addr1_observed"] : "N/A"}</td></tr>
-                  <tr><td>Distance:</td><td>{data[currentPoint]["dist1_observed"] > 0 ? data[currentPoint]["dist1_observed"] + " miles" : "N/A"} </td></tr>
-                </table>
+                <table><tbody>
+                  <tr className={currentPointVariable === "card6" && "current"}><td>Payment Type:</td><td>{data[currentPoint]["card6_observed"]}</td></tr>
+                  <tr className={currentPointVariable === "card4" && "current"}><td>Card Company:</td><td>{data[currentPoint]["card4_observed"]}</td></tr>
+                  <tr className={currentPointVariable === "TransactionDT" && "current"}><td>Transaction Time Delta:</td><td>{data[currentPoint]["TransactionDT_observed"]} seconds</td></tr>
+                  <tr className={currentPointVariable === "TransactionAmt" && "current"}><td>Transaction Amount:</td><td>${data[currentPoint]["TransactionAmt_observed"]}</td></tr>
+                  <tr className={currentPointVariable === "addr1" && "current"}><td>Billing Region:</td><td>{data[currentPoint]["addr1_observed"] > 0 ? data[currentPoint]["addr1_observed"] : "N/A"}</td></tr>
+                  <tr className={currentPointVariable === "dist1" && "current"}><td>Distance:</td><td>{data[currentPoint]["dist1_observed"] > 0 ? data[currentPoint]["dist1_observed"] + " miles" : "N/A"} </td></tr>
+                </tbody></table>
               </div>
               <div id="device-info">
                 <Typography component="h4"><b>Device and Contact Information</b></Typography>
-                <table>
-                  <tr><td>Device Type:</td><td>{data[currentPoint]["DeviceType_observed"]}</td></tr>
-                  <tr><td>Purchaser's Email Domain:</td><td>{data[currentPoint]["P_emaildomain_observed"]}</td></tr>
-                  <tr><td>Recipient's Email Domain:</td><td>{data[currentPoint]["R_emaildomain_observed"]}</td></tr>
-                </table>
+                <table><tbody>
+                  <tr className={currentPointVariable === "DeviceType" && "current"}><td>Device Type:</td><td>{data[currentPoint]["DeviceType_observed"]}</td></tr>
+                  <tr className={currentPointVariable === "P_emaildomain" && "current"}><td>Purchaser's Email Domain:</td><td>{data[currentPoint]["P_emaildomain_observed"]}</td></tr>
+                  <tr className={currentPointVariable === "R_emaildomain" && "current"}><td>Recipient's Email Domain:</td><td>{data[currentPoint]["R_emaildomain_observed"]}</td></tr>
+                </tbody></table>
               </div>
             </div>
           </div>}

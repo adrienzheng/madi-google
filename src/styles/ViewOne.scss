@@ -69,9 +69,30 @@
         flex: 1 0 calc(100% / 3);
 
         table {
-          td {
-            padding-right: 18px;
+          border-spacing: 0;
+          border-collapse: separate;
+
+          tr {
+            &.current {
+              td {
+                background-color: #9DD1C7;
+              }
+            }
+
+            td {
+              padding: 4px 6px;
+              transition: all 0.5s;
+              &:first-child {
+                border-top-left-radius: 10px; 
+                border-bottom-left-radius: 10px;
+              }
+              &:last-child {
+                border-bottom-right-radius: 10px; 
+                border-top-right-radius: 10px; 
+              }
+            }
           }
+          
         }
       }
     }
