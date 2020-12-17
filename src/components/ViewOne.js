@@ -317,7 +317,7 @@ export default function ViewOne() {
                           "#80cbc4",
                           "#c5e1a5",
                           "#ffe082"
-                      ][index % 5]))
+                      ][index % 7]))
                     }}
                   >
                     <div><b>{vname[key]}</b></div> 
@@ -333,7 +333,7 @@ export default function ViewOne() {
                 <Typography component="h4"><b>Risk Level</b></Typography>
                 <table><tbody>
                   <tr><td>Threshold False Positive Rate:</td><td>2:1</td></tr>
-                  <tr><td>Anomalous Likelihood:</td><td>{parseInt(1-data[currentPoint]["class_prob_observed"]*1000)/10+"%"}</td></tr>
+                  <tr><td>Anomalous Likelihood:</td><td>{parseInt((1-data[currentPoint]["class_prob_observed"])*1000)/10+"%"}</td></tr>
                 </tbody></table>
               </div>
               <div id="transaction-info">
