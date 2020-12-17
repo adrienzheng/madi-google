@@ -1,4 +1,10 @@
 import React from 'react';
+
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group';
+
 import './styles/App.scss';
 
 import {
@@ -31,11 +37,13 @@ function App() {
         </Tabs>
         <Button href="https://www.kaggle.com/c/ieee-fraud-detection/overview" target="_blank" color="primary">Data Source: IEEE-CIS Fraud Detection</Button>
       </nav>
-      <div id = "views">
+      <TransitionGroup id = "views">
+        <CSSTransition key={currentView} timeout={800} classNames="view">
         {
           [<ViewOne />, <ViewTwo />, <ViewThree />][currentView]
         }
-      </div>
+        </CSSTransition>
+      </TransitionGroup>
     </div>
   );
 }

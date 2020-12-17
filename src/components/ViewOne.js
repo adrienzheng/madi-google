@@ -246,14 +246,8 @@ export default function ViewOne() {
             },
             plotOptions: {
               scatter: {
-                allowPointSelect: true,
                 marker: {
                   radius: 5,
-                  states: {
-                    select: {
-
-                    }
-                  }
                 },
               },
               series: {
@@ -270,7 +264,7 @@ export default function ViewOne() {
             series: [
               {
                 name: "Anomalous Point",
-                color: "rgba(223, 83, 83, .5)",
+                color: "rgba(216, 67, 21, .5)",
                 data: currentData
               }
             ],
@@ -304,6 +298,7 @@ export default function ViewOne() {
               <div id="breakdown">
                 {Object.entries(getPointDetails()).map(([key, value], index) => (
                   <div
+                    id = {Math.random()}
                     className="breakdown-variable"
                     key={key === "Others" ? "Others" : index}
                     onClick = {() => changePointVariable(key)}
@@ -311,15 +306,17 @@ export default function ViewOne() {
                       flexBasis: value,
                       cursor: key !== "Others" && "pointer",
                       backgroundColor: currentPointVariable ? (
-                        key === currentPointVariable ? "#9DD1C7" : "lightgray"
+                        key === currentPointVariable ? "#90caf9" : "lightgray"
                       ):(key === "Others" ? (
                         "lightgray"
                       ):([
-                          "#9DD1C7",
-                          "#BDBAD7",
-                          "#EB8777",
-                          "#89B1D0",
-                          "#BCDC78"
+                          "#ef9a9a",
+                          "#ce93d8",
+                          "#9fa8da",
+                          "#81d4fa",
+                          "#80cbc4",
+                          "#c5e1a5",
+                          "#ffe082"
                       ][index % 5]))
                     }}
                   >
@@ -336,7 +333,7 @@ export default function ViewOne() {
                 <Typography component="h4"><b>Risk Level</b></Typography>
                 <table><tbody>
                   <tr><td>Threshold False Positive Rate:</td><td>2:1</td></tr>
-                  <tr><td>Anomalous Likelihood:</td><td>{parseInt(data[currentPoint]["class_prob_observed"]*1000)/10+"%"}</td></tr>
+                  <tr><td>Anomalous Likelihood:</td><td>{parseInt(1-data[currentPoint]["class_prob_observed"]*1000)/10+"%"}</td></tr>
                 </tbody></table>
               </div>
               <div id="transaction-info">

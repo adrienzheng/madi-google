@@ -9,11 +9,15 @@ import {
 export default function ViewTwo() {
   return (
     <div id="view-two">
-      <div className="box" id="firstbox">
+      <Typography variant="h5" component="h2" align="center">
+          Overall Trends of Transaction Attributes
+        </Typography>
+      <div className="section box">
         <Typography variant="h6" component="h3">
           <b>Common Attributes</b>
-        </Typography>{" "}
-        <div className="chart">
+        </Typography>
+        <div id="charts">
+          <div className="chart">
           <HighchartsReact
             highcharts={Highcharts}
             options={{
@@ -50,6 +54,9 @@ export default function ViewTwo() {
                 column: {
                   pointPadding: 0.2,
                   borderWidth: 0
+                },
+                series: {
+                  animation: false
                 }
               },
               series: [
@@ -63,8 +70,8 @@ export default function ViewTwo() {
               }
             }}
           />
-        </div>
-        <div className="chart">
+          </div>
+          <div className="chart">
           <HighchartsReact
             highcharts={Highcharts}
             options={{
@@ -86,7 +93,6 @@ export default function ViewTwo() {
                   "american express",
                   "N/A"
                 ],
-                crosshair: true
               },
               yAxis: {
                 min: 0,
@@ -107,6 +113,9 @@ export default function ViewTwo() {
                 column: {
                   pointPadding: 0.2,
                   borderWidth: 0
+                },
+                series: {
+                  animation: false
                 }
               },
               series: [
@@ -120,8 +129,8 @@ export default function ViewTwo() {
               }
             }}
           />
-        </div>
-        <div className="third_chart">
+          </div>
+          <div className="chart">
           <HighchartsReact
             highcharts={Highcharts}
             options={{
@@ -147,8 +156,7 @@ export default function ViewTwo() {
                   "$2509.7-$2868.1",
                   "$2868.1-$3226.5",
                   "$3226.5-$3585.0"
-                ],
-                crosshair: true
+                ]
               },
               yAxis: {
                 min: 0,
@@ -169,6 +177,9 @@ export default function ViewTwo() {
                 column: {
                   pointPadding: 0.2,
                   borderWidth: 0
+                },
+                series: {
+                  animation: false
                 }
               },
               series: [
@@ -182,10 +193,11 @@ export default function ViewTwo() {
               }
             }}
           />
+          </div>
         </div>
       </div>
 
-      <div className="box">
+      <div className="section box">
         <Typography variant="h6" component="h3">
           <b>Variable Attribution Breakdown Over Time</b>
         </Typography>
@@ -257,6 +269,9 @@ export default function ViewTwo() {
                     );
                   }
                 }
+              },
+              series: {
+                animation: false
               }
             },
             series: [

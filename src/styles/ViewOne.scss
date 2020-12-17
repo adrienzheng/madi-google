@@ -45,17 +45,33 @@
     
     #breakdown-cont {
       margin-top: 32px;
-      overflow: hidden;
-      transition: all 1s;
 
       #breakdown {
         display: flex;
         margin-top: 24px;
+        box-shadow: 4px 4px 8px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.5s;
+
+        &:hover {
+          box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.1);
+          transform: scale(0.99);
+        }
 
         .breakdown-variable {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 6px;
+          flex-basis: 0;
           padding: 40px 12px;
           text-align: center;
           transition: all 0.5s;
+
+          &:not(:last-of-type):hover {
+            opacity: 0.8;
+          }
         }
       }
     }
@@ -63,7 +79,6 @@
     #detail-cont {
       display: flex;
       margin-top: 32px;
-      transition: all 0.5s;
 
       &>div {
         flex: 1 0 calc(100% / 3);
@@ -75,7 +90,7 @@
           tr {
             &.current {
               td {
-                background-color: #9DD1C7;
+                background-color: #90caf9;
               }
             }
 
