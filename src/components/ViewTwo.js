@@ -45,7 +45,7 @@ export default function ViewTwo() {
                 headerFormat:
                   '<span style="font-size:10px">{point.key}</span><table>',
                 pointFormat:
-                  '<td style="padding:0"><b>{point.y:.1f} </b></td></tr>',
+                  '<tr><td style="padding:0"><b>{point.y:.1f} </b></td></tr>',
                 footerFormat: "</table>",
                 shared: true,
                 useHTML: true
@@ -104,7 +104,7 @@ export default function ViewTwo() {
                 headerFormat:
                   '<span style="font-size:10px">{point.key}</span><table>',
                 pointFormat:
-                  '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
+                  '<tr><td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
                 footerFormat: "</table>",
                 shared: true,
                 useHTML: true
@@ -168,7 +168,7 @@ export default function ViewTwo() {
                 headerFormat:
                   '<span style="font-size:10px">{point.key}</span><table>',
                 pointFormat:
-                  '<td style="padding:0"><b>{point.y:.1f} </b></td></tr>',
+                  '<tr><td style="padding:0"><b>{point.y:.1f} </b></td></tr>',
                 footerFormat: "</table>",
                 shared: true,
                 useHTML: true

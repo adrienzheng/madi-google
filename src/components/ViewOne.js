@@ -166,7 +166,7 @@ export default function ViewOne() {
             <li>
               <Typography>
                 <strong>False Positive Rate: </strong>
-                {"2:1"}
+                2:1
               </Typography>
             </li>
             <li>
@@ -228,6 +228,17 @@ export default function ViewOne() {
             },
             legend: {
               enabled: false
+            },
+            tooltip: {
+              headerFormat:
+                `<span style="font-size:10px">${vname[currentVariable]}: {point.key}</span>`,
+              pointFormat:
+                `<table><tbody>
+                  <tr><td>Anomalous Likelihood: {point.y}</td></tr>
+                </tbody>`,
+              footerFormat: "</table>",
+              shared: true,
+              useHTML: true
             },
             xAxis: {
               title: {
