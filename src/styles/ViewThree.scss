@@ -23,10 +23,43 @@
       max-width: 720px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: stretch;
 
-      p{
-        margin-bottom: 16px;
+      .auc-text {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-bottom: 24px;
+
+        p {
+          margin-bottom: 12px;
+        }
+
+        table {
+          align-self: flex-end;
+          border-spacing: 24px 4px;
+          border-collapse: separate;
+
+          tr:first-of-type {
+            td {
+              font-weight: 600;
+            }
+          }
+          tr:not(:first-of-type) {
+            td:first-of-type {
+              font-weight: 600;
+            }
+            td:not(:first-of-type) {
+              background-color: lightgray;
+              border-radius: 4px;
+            }
+          }
+          tr td {
+            padding: 4px 24px;
+            text-align: center;
+          }
+        }
       }
     }
   }

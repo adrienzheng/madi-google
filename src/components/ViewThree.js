@@ -140,6 +140,12 @@ export default function ViewThree() {
               <Typography>
                 MADI uses two main approches: NS-NN (negative sampling neural networks) and NS-RF (negative sampling random forest).
               </Typography>
+              <table>
+                <tbody>
+                  <tr><td></td><td>NS-NN</td><td>NS-RF</td></tr>
+                  <tr><td>AUC Score</td><td>0.732</td><td>0.6482</td></tr>
+                </tbody>
+              </table>
             </div>
             <HighchartsReact 
               highcharts = {Highcharts}
@@ -149,6 +155,15 @@ export default function ViewThree() {
           <div className="auc-wrapper">
             <div className="auc-text">
               <Typography component="h3" variant="h6">Others</Typography>
+              <Typography>
+                Here, we are comparing MADI's performances to those of two other popular methods, ISO and OC-SVM (One-Class Support Vector Machine).
+              </Typography>
+              <table>
+                <tbody>
+                  <tr><td></td><td>ISO</td><td>OC-SVM</td></tr>
+                  <tr><td>AUC Score</td><td>0.6488</td><td>0.6447</td></tr>
+                </tbody>
+              </table>
             </div>
             <HighchartsReact 
               highcharts = {Highcharts}
